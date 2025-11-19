@@ -3,16 +3,13 @@
     "short_name": "DomPechenkoWeb",
     "start_url": "index.html",
     "display": "fullscreen",
-    "orientation": "portrait",
     "background_color": "#231F20",
     "theme_color": "#000",
     "description": "",
-    "icons": [
-        {
-            "src": "TemplateData/icons/unity-logo-dark.png",
-            "sizes": "144x144",
-            "type": "image/png",
-            "purpose": "any maskable"
-        }
-    ]
-}
+    "icons": [{
+      "src": "TemplateData/icons/unity-logo-dark.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }]
+  }
