@@ -1,110 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>%UNITY_WEB_NAME%</title>
-
-    <!-- Важный meta viewport для контроля масштаба -->
-    <meta name="viewport"
-          content="width=device-width,
-                   initial-scale=1.0,
-                   user-scalable=no,
-                   maximum-scale=1.0,
-                   viewport-fit=cover">
-
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background: black;
-            width: 100%;
-            height: 100%;
-            touch-action: none;
-        }
-
-        /* Canvas растягиваем вертикально */
-        #unity-canvas {
-            width: 100vw;
-            height: 100vh;
-            touch-action: none;
-        }
-
-        /* Принудительное положение в вертикали */
-        @media screen and (orientation: landscape) {
-            body {
-                transform: rotate(90deg);
-                transform-origin: center center;
-                width: 100vh;
-                height: 100vw;
-            }
-
-            #unity-canvas {
-                width: 100vh;
-                height: 100vw;
-            }
-        }
-    </style>
-
-    <script>
-        // Самый жёсткий способ — блокировать ориентацию
-        function lockPortrait() {
-            // На iOS ScreenOrientation API недоступен — используем костыль с CSS
-            if (screen.orientation && screen.orientation.lock) {
-                screen.orientation.lock("portrait").catch(() => {});
-            }
-
-            forceCssPortrait();
-        }
-
-        // CSS-поворот при landscape режиме
-        function forceCssPortrait() {
-            const isLandscape =
-                window.innerWidth > window.innerHeight;
-
-            if (isLandscape) {
-                document.body.style.transform = "rotate(90deg)";
-                document.body.style.width = window.innerHeight + "px";
-                document.body.style.height = window.innerWidth + "px";
-            } else {
-                document.body.style.transform = "rotate(0deg)";
-                document.body.style.width = "100vw";
-                document.body.style.height = "100vh";
-            }
-        }
-
-        window.addEventListener("orientationchange", lockPortrait);
-        window.addEventListener("resize", lockPortrait);
-
-        document.addEventListener("DOMContentLoaded", lockPortrait);
-    </script>
+<meta charset="utf-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<link rel="manifest" href="manifest.json">
+<title>Unity PWA Portrait</title>
+<style>
+body { margin:0; padding:0; overflow:hidden; background:black; }
+canvas { width:100% !important; height:100% !important; }
+</style>
+<script>
+function forcePortrait() {
+    if (window.matchMedia("(orientation: landscape)").matches) {
+        document.body.style.transform = "rotate(90deg)";
+        document.body.style.width = "100vh";
+        document.body.style.height = "100vw";
+    } else {
+        document.body.style.transform = "rotate(0deg)";
+        document.body.style.width = "100vw";
+        document.body.style.height = "100vh";
+    }
+}
+window.addEventListener("orientationchange", forcePortrait);
+window.addEventListener("resize", forcePortrait);
+document.addEventListener("DOMContentLoaded", forcePortrait);
+</script>
 </head>
-
 <body>
-    <canvas id="unity-canvas"></canvas>
-
-    <script>
-        // Стандартный Unity loader
-        const buildUrl = "%UNITY_WEBGL_LOADER_URL%".substring(
-            0,
-            "%UNITY_WEBGL_LOADER_URL%".lastIndexOf("/")
-        );
-
-        const loaderUrl = "%UNITY_WEBGL_LOADER_URL%";
-        const config = {
-            dataUrl: "%UNITY_WEBGL_DATA_URL%",
-            frameworkUrl: "%UNITY_WEBGL_FRAMEWORK_URL%",
-            codeUrl: "%UNITY_WEBGL_CODE_URL%",
-            streamingAssetsUrl: "StreamingAssets",
-            companyName: "%UNITY_COMPANY_NAME%",
-            productName: "%UNITY_PRODUCT_NAME%",
-            productVersion: "%UNITY_PRODUCT_VERSION%",
-        };
-
-        createUnityInstance(
-            document.querySelector("#unity-canvas"),
-            config
-        );
-    </script>
+<canvas id="unity-canvas"></canvas>
+<script src="Build/build.loader.js"></script>
 </body>
 </html>

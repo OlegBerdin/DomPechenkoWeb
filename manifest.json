@@ -1,0 +1,10 @@
+{
+  "name": "Unity WebGL PWA Portrait",
+  "short_name": "UnityPWA",
+  "start_url": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "TemplateData/favicon.png", "sizes": "192x192", "type": "image/png" }
+  ]
+}

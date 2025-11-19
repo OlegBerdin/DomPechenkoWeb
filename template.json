@@ -1,5 +1,5 @@
 {
-  "title": "Portrait Locked Template",
-  "description": "Unity WebGL template with portrait-only orientation.",
-  "unityTemplateVersion": "1.0"
+  "formatVersion": 1,
+  "templateName": "PWA Portrait Locked",
+  "localization": []
 }
