@@ -1,34 +1,137 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<link rel="manifest" href="manifest.json">
-<title>Unity PWA Portrait</title>
-<style>
-body { margin:0; padding:0; overflow:hidden; background:black; }
-canvas { width:100% !important; height:100% !important; }
-</style>
-<script>
-function forcePortrait() {
-    if (window.matchMedia("(orientation: landscape)").matches) {
-        document.body.style.transform = "rotate(90deg)";
-        document.body.style.width = "100vh";
-        document.body.style.height = "100vw";
-    } else {
-        document.body.style.transform = "rotate(0deg)";
-        document.body.style.width = "100vw";
-        document.body.style.height = "100vh";
-    }
-}
-window.addEventListener("orientationchange", forcePortrait);
-window.addEventListener("resize", forcePortrait);
-document.addEventListener("DOMContentLoaded", forcePortrait);
-</script>
-</head>
-<body>
-<canvas id="unity-canvas"></canvas>
-<script src="Build/build.loader.js"></script>
-</body>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity WebGL Player | DomPechenkoWeb</title>
+
+    <!-- PWA и портретный лок -->
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <link rel="manifest" href="manifest.webmanifest">
+
+    <!-- Meta для портретного режима -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="x5-orientation" content="portrait">
+    <meta name="x5-fullscreen" content="true">
+    <meta name="full-screen" content="yes">
+
+    <!-- CSS fallback для landscape -->
+    <style>
+      @media screen and (orientation: landscape) {
+        body {
+          transform: rotate(-90deg);
+          transform-origin: center center;
+          width: 100vh;
+          height: 100vw;
+          overflow: hidden;
+        }
+        html {
+          overflow: hidden;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="unity-container">
+      <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
+      <div id="unity-loading-bar">
+        <div id="unity-logo"></div>
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
+        </div>
+      </div>
+      <div id="unity-warning"> </div>
+    </div>
+
+    <script>
+      // Service Worker
+      window.addEventListener("load", function () {
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker.register("ServiceWorker.js");
+        }
+      });
+
+      // Unity DOM элементы
+      var container = document.querySelector("#unity-container");
+      var canvas = document.querySelector("#unity-canvas");
+      var loadingBar = document.querySelector("#unity-loading-bar");
+      var progressBarFull = document.querySelector("#unity-progress-bar-full");
+      var warningBanner = document.querySelector("#unity-warning");
+
+      function unityShowBanner(msg, type) {
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+        }
+        var div = document.createElement('div');
+        div.innerHTML = msg;
+        warningBanner.appendChild(div);
+        if (type == 'error') div.style = 'background: red; padding: 10px;';
+        else {
+          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+          setTimeout(function() {
+            warningBanner.removeChild(div);
+            updateBannerVisibility();
+          }, 5000);
+        }
+        updateBannerVisibility();
+      }
+
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/DomPechenkoWeb.loader.js";
+      var config = {
+        dataUrl: buildUrl + "/DomPechenkoWeb.data",
+        frameworkUrl: buildUrl + "/DomPechenkoWeb.framework.js",
+        codeUrl: buildUrl + "/DomPechenkoWeb.wasm",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "DefaultCompany",
+        productName: "DomPechenkoWeb",
+        productVersion: "0.1.0",
+        showBanner: unityShowBanner,
+      };
+
+      // Доп. meta для мобильных устройств
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.getElementsByTagName('head')[0].appendChild(meta);
+      }
+
+      loadingBar.style.display = "block";
+
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+          progressBarFull.style.width = 100 * progress + "%";
+        }).then((unityInstance) => {
+          loadingBar.style.display = "none";
+        }).catch((message) => {
+          alert(message);
+        });
+      };
+      document.body.appendChild(script);
+    </script>
+
+    <!-- JS для жесткой блокировки вертикального режима -->
+    <script>
+      function lockToPortrait() {
+        if (screen.orientation && screen.orientation.lock) {
+          screen.orientation.lock("portrait").catch(()=>{});
+        }
+      }
+
+      window.addEventListener("load", lockToPortrait);
+      window.addEventListener("orientationchange", () => {
+        if (window.orientation !== 0 && window.orientation !== 180) {
+          document.body.style.transform = "rotate(-90deg)";
+        } else {
+          document.body.style.transform = "";
+        }
+      });
+    </script>
+  </body>
 </html>
