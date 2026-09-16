@@ -1,9 +1,9 @@
 const cacheName = "DefaultCompany-DomPechenkoWeb-0.1.0";
 const contentToCache = [
     "Build/DomPechenkoWeb.loader.js",
-    "Build/DomPechenkoWeb.framework.js",
-    "Build/DomPechenkoWeb.data",
-    "Build/DomPechenkoWeb.wasm",
+    "Build/DomPechenkoWeb.framework.js.unityweb",
+    "Build/DomPechenkoWeb.data.unityweb",
+    "Build/DomPechenkoWeb.wasm.unityweb",
     "TemplateData/style.css"
 
 ];
